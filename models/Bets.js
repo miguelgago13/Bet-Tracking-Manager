@@ -106,6 +106,15 @@ class Bets {
     return res.deletedCount > 0;
   };
 
+  async hasMultipleBetsWithALeague(leagueName) {
+    console.log(`Bets.js > hasMultipleBetsWithLeague for league: ${leagueName}`);
+
+    const bets = await this.#getCollection();
+    const count = await bets.countDocuments({ league: leagueName});
+
+    return count > 1;
+  }
+
   async hasMultipleBetsWithATeam(teamName) {
     console.log(`Bets.js > hasMultipleBetsWithTeam for team: ${teamName}`);
 
