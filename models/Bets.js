@@ -125,6 +125,15 @@ class Bets {
 
     return count > 1;
   }
+
+  async hasMultipleBetsWithAPredict(predictName) {
+    console.log(`Bets.js > hasMultipleBetsWithPredict for predict: ${predictName}`);
+
+    const bets = await this.#getCollection();
+    const count = await bets.countDocuments({predict: predictName});
+
+    return count > 1;
+  }
 }
 
 module.exports = Bets;

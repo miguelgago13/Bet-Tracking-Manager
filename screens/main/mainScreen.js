@@ -14,7 +14,7 @@ class MainScreen {
     this.window = new BrowserWindow({
       width: this.position.width,
       height: this.position.height,
-      title: "This is a test application",
+      title: "Bet Tracking Manager",
       show: false,
       removeMenu: true,
       acceptFirstMouse: true,

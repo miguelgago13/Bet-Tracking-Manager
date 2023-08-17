@@ -3,10 +3,12 @@ const globals = require("../../globals");
 const Bets = require("../../models/Bets");
 const Teams = require("../../models/Teams");
 const Leagues = require("../../models/Leagues");
+const Predicts = require("../../models/Predicts");
 
 const bets = new Bets(globals.URI, globals.DB_NAME);
 const teams = new Teams(globals.URI, globals.DB_NAME);
 const leagues = new Leagues(globals.URI, globals.DB_NAME);
+const predicts = new Predicts(globals.URI, globals.DB_NAME);
 let gotBetCallback;
 let gotBetUpdatedCallback;
 let gotDeletedResultCallback;
@@ -29,19 +31,25 @@ let saveBet = async (bet) => {
     `mainPreload > League: ${bet.league}, Home: ${bet.home}, Away: ${bet.away}, Predict: ${bet.predict}, Amount: ${bet.amount}, Odd: ${bet.odd}, Result: ${bet.result}`
   );
   try {
+    // If the league was never used in a bet, add it to the leagues collection
     let league = await leagues.getLeagueByName(bet.league);
     if (!league) {
       league = await leagues.addLeague({ name: bet.league });
     }
-
+    // If the home team was never used in a bet, add it to the teams collection
     let homeTeam = await teams.getTeamByName(bet.home);
     if (!homeTeam) {
       homeTeam = await teams.addTeam({ name: bet.home });
     }
-
+    // If the home team was never used in a bet, add it to the teams collection
     let awayTeam = await teams.getTeamByName(bet.away);
     if (!awayTeam) {
       awayTeam = await teams.addTeam({ name: bet.away });
+    }
+    // If the predict was never used in a bet, add it to the predicts collection
+    let predict = await predicts.getPredictByName(bet.predict);
+    if (!predict) {
+      predict = await predicts.addPredict({ name: bet.predict });
     }
 
     const savedBet = await bets.addBet(bet);
@@ -56,9 +64,13 @@ let deleteBets = async (id) => {
   console.log(`mainPreload > Delete : ${id}`);
   
   const bet = await bets.getBetById(id);
+
+  // For each attribute of a bet, check if it was the only bet for that attribute
   const leagueHasMultipleBets = await bets.hasMultipleBetsWithALeague(bet.league);
   const homeTeamHasMultipleBets = await bets.hasMultipleBetsWithATeam(bet.home);
   const awayTeamHasMultipleBets = await bets.hasMultipleBetsWithATeam(bet.away);
+  const predictHasMultipleBets = await bets.hasMultipleBetsWithAPredict(bet.predict);
+  // If it is the only bet for that attribute, delete that attribute from their own collection type
   if (!leagueHasMultipleBets) {
     await leagues.deleteLeagueByName(bet.league);
   }
@@ -67,6 +79,9 @@ let deleteBets = async (id) => {
   }
   if (!awayTeamHasMultipleBets) {
     await teams.deleteTeamByName(bet.away);
+  }
+  if (!predictHasMultipleBets) {
+    await predicts.deletePredictByName(bet.predict);
   }
 
   bets.deleteBet(id).then((res) => {
@@ -116,6 +131,18 @@ let updateBet = async (id, betarg) => {
     // If the new bet is the first one with this away team, add team to teams colection
     if (!newAwayExists) {
       await teams.addTeam({name: betarg.away});
+    }
+  }
+  if(oldBet.predict != betarg.predict){
+    const oldPredictHasMultipleBets = await bets.hasMultipleBetsWithAPredict(oldBet.predict);
+    const newPredictExists = await predicts.predictExistsByName(betarg.predict);
+    // If the old bet is the only one with this away team, delete team from teams collection
+    if (!oldPredictHasMultipleBets) {
+      await predicts.deletePredictByName(oldBet.predict);
+    }
+    // If the new bet is the first one with this away team, add team to teams colection
+    if (!newPredictExists) {
+      await predicts.addPredict({name: betarg.predict});
     }
   }
 
