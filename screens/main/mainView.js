@@ -143,8 +143,32 @@ function Edit(betId) {
   amount.value = betFound.amount;
   odd.value = betFound.odd;
   result.value = betFound.result;
+
+  // Show the addBetContainer
+  addBetContainer.style.display = "block";
+  btnAddBet.textContent = "Cancel";
 }
 
 const gotBetUpdatedResult = (result) => {
   if (result) window.api.getBets();
 };
+
+// Add Bet/Cancel Button
+const btnAddBet = document.getElementById("btnAddBet");
+const addBetContainer = document.getElementById("addBetContainer");
+btnAddBet.addEventListener("click", function() {
+  if (addBetContainer.style.display === "none") {
+    addBetContainer.style.display = "block";
+    btnAddBet.textContent = "Cancel";
+  } else {
+    addBetContainer.style.display = "none";
+    btnAddBet.textContent = "Add Bet";
+  }
+});
+// Save Bet Button
+const btnSaveBet = document.getElementById("btnSave");
+btnSaveBet.addEventListener("click", function() {
+  addBetContainer.style.display = "none";
+  btnAddBet.textContent = "Add Bet";
+});
+

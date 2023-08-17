@@ -9,46 +9,50 @@
   <link rel="stylesheet" href="../../assets/css/bulma.min.css" />
 </head>
 <body>
-  <section class="section">
-    <h1 class="title">Bet Tracking Manager</h1>
-
-    <div class="box mt-3">
-      <form>
-        <div class="field">
-          <label for="league">League</label>
-          <input class="input" type="text" id="league" />
-        </div>
-        <div class="field">
-          <label for="home">Home</label>
-          <input class="input" type="text" id="home" />
-        </div>
-        <div class="field">
-          <label for="away">Away</label>
-          <input class="input" type="text" id="away" />
-        </div>
-        <div class="field">
-          <label for="predict">Predict</label>
-          <input class="input" type="text" id="predict" />
-        </div>
-        <div class="field">
-          <label for="amount">Amount</label>
-          <input class="input" type="text" id="amount" />
-        </div>
-        <div class="field">
-          <label for="odd">Odd</label>
-          <input class="input" type="text" id="odd" />
-        </div>
-        <div class="field">
-          <label for="result">Result</label>
-          <input class="input" type="text" id="result" />
-        </div>
-        <input type="hidden" id="betId" value="" />
-
-        <button class="button is-primary" id="btnGet">Get Bets</button>
-        <button class="button is-primary" id="btnSave">Save Bet</button>
-      </form>
-    </div>
-
+  <h1 class="title">Bet Tracking Manager</h1>
+  <div style="text-align: center; margin-top: 20px;">
+    <button class="button is-primary" id="btnAddBet">Add Bet</button>
+    <button class="button is-primary" id="btnGet">Get Bets</button>
+  </div>
+  <div id="addBetContainer" style="display: none;">
+    <section class="section">
+      <div class="box mt-3">
+        <form>
+          <div class="field">
+            <label for="league">League</label>
+            <input class="input" type="text" id="league" />
+          </div>
+          <div class="field">
+            <label for="home">Home</label>
+            <input class="input" type="text" id="home" />
+          </div>
+          <div class="field">
+            <label for="away">Away</label>
+            <input class="input" type="text" id="away" />
+          </div>
+          <div class="field">
+            <label for="predict">Predict</label>
+            <input class="input" type="text" id="predict" />
+          </div>
+          <div class="field">
+            <label for="amount">Amount</label>
+            <input class="input" type="text" id="amount" />
+          </div>
+          <div class="field">
+            <label for="odd">Odd</label>
+            <input class="input" type="text" id="odd" />
+          </div>
+          <div class="field">
+            <label for="result">Result</label>
+            <input class="input" type="text" id="result" />
+          </div>
+          <input type="hidden" id="betId" value="" />
+          <button class="button is-primary" id="btnSave">Save Bet</button>
+        </form>
+      </div>
+    </section>
+  </div>
+  <section>
     <div class="box mt-3">
       <table class="table">
         <thead>
@@ -71,6 +75,6 @@
   </section>
 
   <script src="mainView.js"></script>
-
+  
 </body>
 </html>
