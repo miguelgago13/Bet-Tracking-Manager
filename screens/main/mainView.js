@@ -31,8 +31,10 @@ const gotBets = (bets) => {
       <td>${bet.amount}</td>
       <td>${bet.odd}</td>
       <td>${bet.result}</td>
-      <td><input type="button" onclick="Delete('${bet.id}')" value="Delete" /></td>
-      <td><input type="button" onclick="Edit('${bet.id}')" value="Edit Bet" /></td>
+      <td><button class="button ${bet.result === "Green" ? "is-primary" : "has-background-grey-light"}" onclick="Green('${bet.id}')">Green</button></td>
+      <td><button class="button ${bet.result === "Red" ? "is-danger" : "has-background-grey-light"}" onclick="Red('${bet.id}')">Red</button></td>
+      <td><button class="button is-link" onclick="Delete('${bet.id}')">Delete</button></td>
+      <td><button class="button is-link" onclick="Edit('${bet.id}')">Edit</button></td>
     </tr>`;
 
       return res;
@@ -147,6 +149,24 @@ function Edit(betId) {
   // Show the addBetContainer
   addBetContainer.style.display = "block";
   btnAddBet.textContent = "Cancel";
+}
+
+function Green(betId){
+  const betFound = betData.find((bet) => bet.id === betId);
+  betFound.result = "Green";
+  window.api.updateBet(betId, betFound);
+  resetForm();
+  // Change Green button from grey color to green color
+  const greenButton = document.querySelector(`[onclick="Green('${betId}')"]`);
+  greenButton.classList.remove("has-background-grey-light");
+  greenButton.classList.add("is-primary");
+}
+
+function Red(betId){
+  const betFound = betData.find((bet) => bet.id === betId);
+  betFound.result = "Red";
+  window.api.updateBet(betId, betFound);
+  resetForm();
 }
 
 const gotBetUpdatedResult = (result) => {
