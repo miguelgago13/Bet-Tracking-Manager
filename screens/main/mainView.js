@@ -102,7 +102,7 @@ const resetForm = () => {
   predict.value = "";
   amount.value = "";
   odd.value = "";
-  result.value = "";
+  result.value = "Pending";
 
   window.api.getBets();
 };
