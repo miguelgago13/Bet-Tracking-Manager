@@ -63,7 +63,7 @@ class Bets {
   };
 
   getBetById = async (id) => {
-    console.log(`Bets.js > getBetsById for id: ${id}`);
+    console.log(`Bets.js > getBetById for id: ${id}`);
 
     const bets = await this.#getCollection();
     let bet = await bets.findOne({_id: new ObjectId(id)});

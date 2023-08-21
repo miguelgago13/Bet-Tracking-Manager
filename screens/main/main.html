@@ -7,55 +7,65 @@
   <title>Bet Tracking Manager</title>
 
   <link rel="stylesheet" href="../../assets/css/bulma.min.css" />
+  <link rel="stylesheet" href="../../assets/css/extraStyles.css" />
 </head>
 <body>
   <h1 class="title">Bet Tracking Manager</h1>
   <div style="text-align: center; margin-top: 20px;">
-    <button class="button is-primary" id="btnAddBet">Add Bet</button>
-    <button class="button is-primary" id="btnGet">Get Bets</button>
+    <button class="button is-link" id="btnAddBet">Add Bet</button>
+    <button class="button is-link" id="btnGet">Get Bets</button>
   </div>
   <div id="addBetContainer" style="display: none;">
     <section class="section">
       <div class="box mt-3">
-        <form>
-          <div class="field">
-            <label for="league">League</label>
-            <input class="input" type="text" id="league" maxlength="30" />
-            <p class="char-count"></p>
-          </div>
-          <div class="field">
-            <label for="home">Home</label>
-            <input class="input" type="text" id="home" maxlength="30" />
-            <p class="char-count"></p>
-          </div>
-          <div class="field">
-            <label for="away">Away</label>
-            <input class="input" type="text" id="away" maxlength="30" />
-            <p class="char-count"></p>
-          </div>
-          <div class="field">
-            <label for="predict">Predict</label>
-            <input class="input" type="text" id="predict" maxlength="30" />
-            <p class="char-count"></p>
-          </div>
-          <div class="field">
-            <label for="amount">Amount</label>
-            <input class="input" type="text" id="amount" maxlength="30" />
-            <p class="char-count"></p>
-          </div>
-          <div class="field">
-            <label for="odd">Odd</label>
-            <input class="input" type="text" id="odd" maxlength="30" />
-            <p class="char-count"></p>
-          </div>
-          <div class="field">
-            <label for="result">Result</label>
-            <input class="input" type="text" id="result" maxlength="30" />
-            <p class="char-count"></p>
+        <form class="columns">
+          <div class="column is-half">
+            <div class="field">
+              <label for="league">League</label>
+              <input class="input" type="text" id="league" maxlength="30" />
+              <p class="char-count"></p>
+            </div>
+            <div class="field">
+              <label for="home">Home</label>
+              <input class="input" type="text" id="home" maxlength="30" />
+              <p class="char-count"></p>
+            </div>
+            <div class="field">
+              <label for="away">Away</label>
+              <input class="input" type="text" id="away" maxlength="30" />
+              <p class="char-count"></p>
+            </div>
+            <div class="field">
+              <label for="predict">Predict</label>
+              <input class="input" type="text" id="predict" maxlength="30" />
+              <p class="char-count"></p>
+            </div>
+          </div>  
+          <div class="column is-half">
+            <div class="field">
+              <label for="amount">Amount</label>
+              <input class="input" type="text" id="amount" maxlength="30" />
+              <p class="char-count"></p>
+            </div>
+            <div class="field">
+              <label for="odd">Odd</label>
+              <input class="input" type="text" id="odd" maxlength="30" />
+              <p class="char-count"></p>
+            </div>
+            <div class="field">
+              <label for="result">Result</label>
+              <div class="select">
+                <select id="result">
+                  <option value="Pending" selected>Pending</option>
+                  <option value="Green">Green</option>
+                  <option value="Red">Red</option>
+                </select>
+              </div>
+            </div>
           </div>
           <input type="hidden" id="betId" value="" />
-          <button class="button is-primary" id="btnSave">Save Bet</button>
         </form>
+        <button class="button is-link" id="btnSave">Save Bet</button>
       </div>
     </section>
   </div>

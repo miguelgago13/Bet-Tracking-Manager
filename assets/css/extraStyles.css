@@ -1,0 +1,32 @@
+ /* Add custom CSS to control dropdown positioning */
+ .field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  margin-bottom: 5px;
+}
+
+.field .select {
+  width: 100%;
+  position: relative; /* Ensure relative positioning for dropdown container */
+}
+
+.field .select select {
+  width: 100%;
+  padding-right: 25px; /* Create space for the arrow */
+}
+
+.field .select::after {
+  content: '\25BC'; /* Unicode arrow character */
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  pointer-events: none; /* Ensure the arrow doesn't interfere with the select element */
+}
+
+.result-button {
+  width: 80px; /* Adjust the width as needed */
+}

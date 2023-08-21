@@ -30,12 +30,14 @@ const gotBets = (bets) => {
       <td>${bet.predict}</td>
       <td>${bet.amount}</td>
       <td>${bet.odd}</td>
-      <td>${bet.result}</td>
-      <td><button class="button ${bet.result === "Green" ? "is-primary" : "has-background-grey-light"}" onclick="Green('${bet.id}')">Green</button></td>
-      <td><button class="button ${bet.result === "Red" ? "is-danger" : "has-background-grey-light"}" onclick="Red('${bet.id}')">Red</button></td>
+      <td>
+        <button class="button result-button ${bet.result === "Pending" ? "has-background-grey-light" : (bet.result === "Green" ? "is-primary" : "is-danger")}" 
+        onclick="toggleResult('${bet.id}')">${bet.result}
+        </button>
+      </td>
       <td><button class="button is-link" onclick="Delete('${bet.id}')">Delete</button></td>
       <td><button class="button is-link" onclick="Edit('${bet.id}')">Edit</button></td>
-    </tr>`;
+      </tr>`;
 
       return res;
     })
@@ -151,28 +153,6 @@ function Edit(betId) {
   btnAddBet.textContent = "Cancel";
 }
 
-function Green(betId){
-  const betFound = betData.find((bet) => bet.id === betId);
-  betFound.result = "Green";
-  window.api.updateBet(betId, betFound);
-  resetForm();
-  // Change Green button from grey color to green color
-  const greenButton = document.querySelector(`[onclick="Green('${betId}')"]`);
-  greenButton.classList.remove("has-background-grey-light");
-  greenButton.classList.add("is-primary");
-}
-
-function Red(betId){
-  const betFound = betData.find((bet) => bet.id === betId);
-  betFound.result = "Red";
-  window.api.updateBet(betId, betFound);
-  resetForm();
-}
-
-const gotBetUpdatedResult = (result) => {
-  if (result) window.api.getBets();
-};
-
 // Add Bet/Cancel Button
 const btnAddBet = document.getElementById("btnAddBet");
 const addBetContainer = document.getElementById("addBetContainer");
@@ -223,7 +203,7 @@ inputFields.forEach((input, index) => {
     const charCountElement = input.nextElementSibling;
     charCountElement.style.display = "none";
   });
-
+  // Enter key advances to the next input field
   input.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevent form submission
@@ -236,6 +216,30 @@ inputFields.forEach((input, index) => {
     }
   });
 });
+
+
+function toggleResult(betId) {
+  const betFound = betData.find((bet) => bet.id === betId);
+  console.log("Current bet result:", betFound.result);
+
+  const resultStates = ["Pending", "Green", "Red"];
+  const currentResultIndex = resultStates.indexOf(betFound.result);
+
+  // Find the next result state when the Result button gets clicked
+  const newResultIndex = (currentResultIndex + 1) % resultStates.length;
+  const newResult = resultStates[newResultIndex];
+  console.log("New bet result:", newResult);
+
+  // Apply the new result
+  betFound.result = newResult;
+
+  console.log("Updating bet with new result:", betFound.result);
+  window.api.updateBet(betId, betFound);
+}
+
+const gotBetUpdatedResult = (result) => {
+  if (result) window.api.getBets();
+};
 
 
 
