@@ -163,6 +163,7 @@ btnAddBet.addEventListener("click", function() {
   } else {
     addBetContainer.style.display = "none";
     btnAddBet.textContent = "Add Bet";
+    resetForm();
   }
 });
 // Save Bet Button

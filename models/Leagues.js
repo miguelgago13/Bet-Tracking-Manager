@@ -64,16 +64,16 @@ class Leagues {
   }
   
   async leagueExistsByName(name) {
-    console.log(`League.js > teamExistsByName: ${name}`);
+    console.log(`League.js > leagueExistsByName: ${name}`);
     const leagues = await this.#getCollection();
     const league = await leagues.findOne({ name });
     return league !== null;
   }
   
-  async addLeague(teamData) {
-    console.log(`League.js > addLeague: ${teamData}`);
+  async addLeague(leagueData) {
+    console.log(`League.js > addLeague: ${leagueData}`);
     const leagues = await this.#getCollection();
-    const result = await leagues.insertOne(teamData);
+    const result = await leagues.insertOne(leagueData);
     return result.ops[0];
   }
   
