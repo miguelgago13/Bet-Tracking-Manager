@@ -30,3 +30,25 @@
 .result-button {
   width: 80px; /* Adjust the width as needed */
 }
+
+/* Style the dropdown list */
+datalist {
+  position: relative;
+  width: 100%;
+  overflow-y: auto;
+  border: 1px solid #dbdbdb; /* Match the border color of select elements */
+  border-radius : 10px;
+}
+
+datalist option {
+  padding: 8px; /* Match the padding of select options */
+  cursor: pointer;
+  color: #363636; /* Match the color of select options */
+}
+
+/* Style the dropdown options on hover and selection */
+datalist option:hover,
+datalist option:checked {
+  background-color: #f0f0f0; /* Match the hover color of select options */
+}
+

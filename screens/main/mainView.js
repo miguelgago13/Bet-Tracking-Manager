@@ -12,6 +12,43 @@ window.addEventListener("load", () => {
   window.api.gotBets(gotBets);
   window.api.gotBetUpdatedResult(gotBetUpdatedResult);
   window.api.gotDeletedResult(gotDeletedResult);
+
+  const leagueInput = document.getElementById("leagueInput");
+  const leagueOptions = document.getElementById("leagueOptions");
+
+  let allLeagueOptions = []; // To store all league options fetched from the API
+
+  // Fetch league names from the API and populate the datalist
+  async function populateLeagueOptions() {
+    try {
+      const leagueNames = await window.api.getLeagueNames();
+      const leagueOptions = document.getElementById("leagueOptions");
+      allLeagueOptions = leagueNames;
+      leagueOptions.innerHTML = ""; // Clear existing options
+      leagueNames.forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        leagueOptions.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error fetching league names:", error);
+    }
+  }
+
+  // Add an input event listener to filter the options based on user input
+  leagueInput.addEventListener("input", () => {
+    const inputText = leagueInput.value.toLowerCase();
+    const filteredOptions = allLeagueOptions.filter((name) =>
+      name.toLowerCase().startsWith(inputText)
+    );
+    leagueOptions.innerHTML = ""; // Clear existing options
+    filteredOptions.forEach((name) => {
+      const option = document.createElement("option");
+      option.value = name;
+      leagueOptions.appendChild(option);
+    });
+  });
+  populateLeagueOptions(); // Populate options when the page loads
 });
 
 let betData = {};
@@ -53,12 +90,28 @@ const btnGetClick = (event) => {
 
   window.api.getBets();
 };
+let allLeagueOptions = []; 
+async function refreshLeagueOptions() {
+  try {
+    const leagueNames = await window.api.getLeagueNames();
+    const leagueOptions = document.getElementById("leagueOptions");
+    allLeagueOptions = leagueNames;
+    leagueOptions.innerHTML = ""; // Clear existing options
+    leagueNames.forEach((name) => {
+      const option = document.createElement("option");
+      option.value = name;
+      leagueOptions.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error fetching league names:", error);
+  }
+}
 
 const btnSaveClick = async (event) => {
   console.log("Save button clicked");
   event.preventDefault();
 
-  const league = document.getElementById("league").value;
+  const league = document.getElementById("leagueInput").value;
   const home = document.getElementById("home").value;
   const away = document.getElementById("away").value;
   const predict = document.getElementById("predict").value;
@@ -87,7 +140,7 @@ const btnSaveClick = async (event) => {
 // Helper function to reset the form fields
 const resetForm = () => {
   const inputId = document.getElementById("betId");
-  const league = document.getElementById("league");
+  const league = document.getElementById("leagueInput");
   const home = document.getElementById("home");
   const away = document.getElementById("away");
   const predict = document.getElementById("predict");
@@ -105,6 +158,7 @@ const resetForm = () => {
   result.value = "Pending";
 
   window.api.getBets();
+  refreshLeagueOptions();
 };
 
 const setFocusOnInput = (inputId) => {
@@ -131,7 +185,7 @@ function Edit(betId) {
   const betFound = betData.find((bet) => bet.id === betId);
 
   const inputId = document.getElementById("betId");
-  const league = document.getElementById("league");
+  const league = document.getElementById("leagueInput");
   const home = document.getElementById("home");
   const away = document.getElementById("away");
   const predict = document.getElementById("predict");

@@ -34,6 +34,18 @@ class Leagues {
     return res;
   };
 
+  getLeagueNames = async () => {
+    console.log(`Leagues.js > getLeagueNames`);
+  
+    const leagues = await this.#getCollection();
+    let res = await leagues.find({}).toArray();
+  
+    res = res.map((league) => league.name);
+    res = res.sort();
+    console.log(res);
+    return res;
+  };
+
   addLeague = async (league) => {
     console.log(`League.js > addLeague: ${league}`);
 

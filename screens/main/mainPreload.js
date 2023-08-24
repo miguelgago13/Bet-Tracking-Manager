@@ -165,11 +165,22 @@ let gotBetUpdatedResult = (callback) => {
   gotBetUpdatedCallback = callback;
 };
 
+let getLeagueNames = async () => {
+  try {
+    const leagueNames = await leagues.getLeagueNames(); // Assuming leagues is available
+    return leagueNames;
+  } catch (error) {
+    console.error("Error fetching league names:", error);
+    return [];
+  }
+};
+
 contextBridge.exposeInMainWorld("api", {
   getBets,
   gotBets,
   saveBet,
   updateBet,
+  getLeagueNames,
   gotBetUpdatedResult,
   gotDeletedResult,
   deleteBets,
