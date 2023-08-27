@@ -1,5 +1,21 @@
-window.addEventListener("load", () => {
+var leagueOptions = [];
+var leagueInput = document.getElementById("leagueInput");
+
+function updateLeagueList() {
+  const inputValue = leagueInput.value;
+  const filteredLeagues = leagueOptions.filter(league =>
+    league.toLowerCase().includes(inputValue.toLowerCase())
+  );
+
+  const displayedLeagues = filteredLeagues.slice(0, 3);
+  const html = displayedLeagues.map(league => `<li>${league}</li>`).join("");
+  document.getElementById("leagues-list").innerHTML = html;
+  return html;
+}
+
+window.addEventListener("load", async () => {
   //Event handlers
+  leagueOptions = await window.api.getLeagueNames();
   //Save button
   const btnSave = document.getElementById("btnSave");
   btnSave.addEventListener("click", btnSaveClick);
@@ -12,46 +28,9 @@ window.addEventListener("load", () => {
   window.api.gotBets(gotBets);
   window.api.gotBetUpdatedResult(gotBetUpdatedResult);
   window.api.gotDeletedResult(gotDeletedResult);
-
-  const leagueInput = document.getElementById("leagueInput");
-  const leagueOptions = document.getElementById("leagueOptions");
-
-  let allLeagueOptions = []; // To store all league options fetched from the API
-
-  // Fetch league names from the API and populate the datalist
-  async function populateLeagueOptions() {
-    try {
-      const leagueNames = await window.api.getLeagueNames();
-      const leagueOptions = document.getElementById("leagueOptions");
-      allLeagueOptions = leagueNames;
-      leagueOptions.innerHTML = ""; // Clear existing options
-      leagueNames.forEach((name) => {
-        const option = document.createElement("option");
-        option.value = name;
-        leagueOptions.appendChild(option);
-      });
-    } catch (error) {
-      console.error("Error fetching league names:", error);
-    }
-  }
-
-  // Add an input event listener to filter the options based on user input
-  leagueInput.addEventListener("input", () => {
-    const inputText = leagueInput.value.toLowerCase();
-    const filteredOptions = allLeagueOptions.filter((name) =>
-      name.toLowerCase().startsWith(inputText)
-    );
-    leagueOptions.innerHTML = ""; // Clear existing options
-    filteredOptions.forEach((name) => {
-      const option = document.createElement("option");
-      option.value = name;
-      leagueOptions.appendChild(option);
-    });
-  });
-  populateLeagueOptions(); // Populate options when the page loads
+  updateLeagueList();
 });
 
-let betData = {};
 
 const gotBets = (bets) => {
   betData = bets;
@@ -84,28 +63,24 @@ const gotBets = (bets) => {
   tbData.innerHTML = betRows;
 };
 
+const gotDeletedResult = (result) => {
+  if (result) {
+    // alert("Record deleted");
+    resetForm();
+  }
+};
+
+const gotBetUpdatedResult = (result) => {
+  if (result) window.api.getBets();
+};
+
 const btnGetClick = (event) => {
   console.log("Get button clicked");
   event.preventDefault();
 
   window.api.getBets();
 };
-let allLeagueOptions = []; 
-async function refreshLeagueOptions() {
-  try {
-    const leagueNames = await window.api.getLeagueNames();
-    const leagueOptions = document.getElementById("leagueOptions");
-    allLeagueOptions = leagueNames;
-    leagueOptions.innerHTML = ""; // Clear existing options
-    leagueNames.forEach((name) => {
-      const option = document.createElement("option");
-      option.value = name;
-      leagueOptions.appendChild(option);
-    });
-  } catch (error) {
-    console.error("Error fetching league names:", error);
-  }
-}
+
 
 const btnSaveClick = async (event) => {
   console.log("Save button clicked");
@@ -131,14 +106,13 @@ const btnSaveClick = async (event) => {
       await window.api.updateBet(betId, { league, home, away, predict, amount, odd, result });
     }
     resetForm();
-    // setFocusOnInput('league');
   } catch (error) {
     console.error(error);
   }
 };
 
 // Helper function to reset the form fields
-const resetForm = () => {
+const resetForm = async () => {
   const inputId = document.getElementById("betId");
   const league = document.getElementById("leagueInput");
   const home = document.getElementById("home");
@@ -158,22 +132,8 @@ const resetForm = () => {
   result.value = "Pending";
 
   window.api.getBets();
-  refreshLeagueOptions();
-};
-
-const setFocusOnInput = (inputId) => {
-  const inputElement = document.getElementById(inputId);
-  if (inputElement) {
-    inputElement.focus();
-  }
-};
-
-const gotDeletedResult = (result) => {
-  if (result) {
-    // alert("Record deleted");
-    resetForm();
-    //setFocusOnInput('league');
-  }
+  leagueOptions = await window.api.getLeagueNames();
+  updateLeagueList();
 };
 
 function Delete(betId) {
@@ -220,6 +180,7 @@ btnAddBet.addEventListener("click", function() {
     resetForm();
   }
 });
+
 // Save Bet Button
 const btnSaveBet = document.getElementById("btnSave");
 btnSaveBet.addEventListener("click", function() {
@@ -230,49 +191,52 @@ btnSaveBet.addEventListener("click", function() {
 // Add an event listener to each input field to track character count and focus events
 const inputFields = document.querySelectorAll(".input");
 inputFields.forEach((input, index) => {
-  input.addEventListener("input", function () {
-    const maxLength = parseInt(input.getAttribute("maxlength"));
-    const currentLength = input.value.length;
-    const remainingChars = maxLength - currentLength;
+  if (input.id !== "leagueInput") { // Exclude the league input field
+    input.addEventListener("input", function () {
+      const maxLength = parseInt(input.getAttribute("maxlength"));
+      const currentLength = input.value.length;
+      const remainingChars = maxLength - currentLength;
 
-    // Display character count feedback in the sibling char-count element
-    const charCountElement = input.nextElementSibling;
-    charCountElement.textContent = `${remainingChars} characters remaining`;
+      // Display character count feedback in the sibling char-count element
+      const charCountElement = input.nextElementSibling;
+      charCountElement.textContent = `${remainingChars} characters remaining`;
 
-    // Apply styling to indicate remaining characters or exceed the limit
-    if (remainingChars < 0) {
-      charCountElement.classList.add("has-text-danger");
-    } else {
-      charCountElement.classList.remove("has-text-danger");
-    }
-  });
-
-  // Show character count element when the input field is focused
-  input.addEventListener("focus", function () {
-    const charCountElement = input.nextElementSibling;
-    charCountElement.style.display = "block";
-  });
-
-  // Hide character count element when the input field loses focus
-  input.addEventListener("blur", function () {
-    const charCountElement = input.nextElementSibling;
-    charCountElement.style.display = "none";
-  });
-  // Enter key advances to the next input field
-  input.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault(); // Prevent form submission
-
-      // Calculate the index of the next input field
-      const nextIndex = index + 1;
-      if (nextIndex < inputFields.length) {
-        inputFields[nextIndex].focus(); // Shift focus to the next input field
+      // Apply styling to indicate remaining characters or exceed the limit
+      if (remainingChars < 0) {
+        charCountElement.classList.add("has-text-danger");
+      } else {
+        charCountElement.classList.remove("has-text-danger");
       }
-    }
-  });
+    });
+
+    // Show character count element when the input field is focused
+    input.addEventListener("focus", function () {
+      const charCountElement = input.nextElementSibling;
+      charCountElement.style.display = "block";
+    });
+
+    // Hide character count element when the input field loses focus
+    input.addEventListener("blur", function () {
+      const charCountElement = input.nextElementSibling;
+      charCountElement.style.display = "none";
+    });
+
+    // Enter key advances to the next input field
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault(); // Prevent form submission
+
+        // Calculate the index of the next input field
+        const nextIndex = index + 1;
+        if (nextIndex < inputFields.length) {
+          inputFields[nextIndex].focus(); // Shift focus to the next input field
+        }
+      }
+    });
+  }
 });
 
-
+// Pending -> Green -> Red -> Pending -> ...
 function toggleResult(betId) {
   const betFound = betData.find((bet) => bet.id === betId);
   console.log("Current bet result:", betFound.result);
@@ -292,13 +256,31 @@ function toggleResult(betId) {
   window.api.updateBet(betId, betFound);
 }
 
-const gotBetUpdatedResult = (result) => {
-  if (result) window.api.getBets();
-};
+///////////////////////  LEAGUE INPUT FIELD DROPDOWN  ///////////////////////
 
+// Add an event listener to the leagueInput to show the dropdown when clicked
+leagueInput.addEventListener("focus", function () {
+  updateLeagueList();
+  document.getElementById("leagues-list").style.display = "block"; // Show the dropdown
+});
 
+leagueInput.addEventListener("input", function () {
+  const html = updateLeagueList();
+  document.getElementById("leagues-list").innerHTML = html;
+});
 
+// Add click event listeners to the dropdown items
+document.getElementById("leagues-list").addEventListener("click", function (event) {
+  const clickedItem = event.target;
+  if (clickedItem.tagName === "LI") {
+    leagueInput.value = clickedItem.textContent;
+    document.getElementById("leagues-list").style.display = "none"; // Hide the dropdown after selection
+  }
+});
 
-
-
-
+// Hide the dropdown when clicking outside of it
+window.addEventListener("click", function (event) {
+  if (event.target !== leagueInput && event.target !== document.getElementById("leagues-list")) {
+    document.getElementById("leagues-list").style.display = "none";
+  }
+});

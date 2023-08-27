@@ -1,5 +1,5 @@
  /* Add custom CSS to control dropdown positioning */
- .field {
+.field {
   display: flex;
   flex-direction: column;
 }
@@ -32,23 +32,17 @@
 }
 
 /* Style the dropdown list */
-datalist {
-  position: relative;
+ul {
   width: 100%;
   overflow-y: auto;
   border: 1px solid #dbdbdb; /* Match the border color of select elements */
   border-radius : 10px;
 }
 
-datalist option {
+ul li {
   padding: 8px; /* Match the padding of select options */
   cursor: pointer;
   color: #363636; /* Match the color of select options */
 }
 
-/* Style the dropdown options on hover and selection */
-datalist option:hover,
-datalist option:checked {
-  background-color: #f0f0f0; /* Match the hover color of select options */
-}
 
