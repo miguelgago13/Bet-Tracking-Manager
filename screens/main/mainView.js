@@ -188,53 +188,6 @@ btnSaveBet.addEventListener("click", function() {
   btnAddBet.textContent = "Add Bet";
 });
 
-// Add an event listener to each input field to track character count and focus events
-const inputFields = document.querySelectorAll(".input");
-inputFields.forEach((input, index) => {
-  if (input.id !== "leagueInput") { // Exclude the league input field
-    input.addEventListener("input", function () {
-      const maxLength = parseInt(input.getAttribute("maxlength"));
-      const currentLength = input.value.length;
-      const remainingChars = maxLength - currentLength;
-
-      // Display character count feedback in the sibling char-count element
-      const charCountElement = input.nextElementSibling;
-      charCountElement.textContent = `${remainingChars} characters remaining`;
-
-      // Apply styling to indicate remaining characters or exceed the limit
-      if (remainingChars < 0) {
-        charCountElement.classList.add("has-text-danger");
-      } else {
-        charCountElement.classList.remove("has-text-danger");
-      }
-    });
-
-    // Show character count element when the input field is focused
-    input.addEventListener("focus", function () {
-      const charCountElement = input.nextElementSibling;
-      charCountElement.style.display = "block";
-    });
-
-    // Hide character count element when the input field loses focus
-    input.addEventListener("blur", function () {
-      const charCountElement = input.nextElementSibling;
-      charCountElement.style.display = "none";
-    });
-
-    // Enter key advances to the next input field
-    input.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault(); // Prevent form submission
-
-        // Calculate the index of the next input field
-        const nextIndex = index + 1;
-        if (nextIndex < inputFields.length) {
-          inputFields[nextIndex].focus(); // Shift focus to the next input field
-        }
-      }
-    });
-  }
-});
 
 // Pending -> Green -> Red -> Pending -> ...
 function toggleResult(betId) {
@@ -255,6 +208,67 @@ function toggleResult(betId) {
   console.log("Updating bet with new result:", betFound.result);
   window.api.updateBet(betId, betFound);
 }
+
+function addCharacterCounter(inputField) {
+  const maxLength = parseInt(inputField.getAttribute("maxlength"));
+  const currentLength = inputField.value.length;
+  const remainingChars = maxLength - currentLength;
+
+  // Navigate to the parent container and find the char-count element
+  const parentContainer = inputField.closest(".field");
+  const charCountElement = parentContainer.querySelector(".char-count");
+  charCountElement.textContent = `${remainingChars} characters remaining`;
+
+  // Apply styling to indicate remaining characters or exceed the limit
+  if (remainingChars < 6) {
+    charCountElement.classList.add("has-text-danger");
+  } else {
+    charCountElement.classList.remove("has-text-danger");
+  }
+}
+
+function showCharacterCountElement(inputField) {
+  const parentContainer = inputField.closest(".field");
+  const charCountElement = parentContainer.querySelector(".char-count");
+  charCountElement.style.display = "block";
+}
+
+function hideCharacterCountElement(inputField) {
+  const parentContainer = inputField.closest(".field");
+    const charCountElement = parentContainer.querySelector(".char-count");
+    charCountElement.style.display = "none";
+}
+
+// Add an event listener to each input field to track character count and focus events
+const inputFields = document.querySelectorAll(".input");
+inputFields.forEach((input, index) => {
+  input.addEventListener("input", function () {
+    addCharacterCounter(input);
+  });
+
+  // Show character count element when the input field is focused
+  input.addEventListener("focus", function () {
+    showCharacterCountElement(input);
+  });
+
+  // Hide character count element when the input field loses focus
+  input.addEventListener("blur", function () {
+    hideCharacterCountElement(input);
+  });
+
+  // Enter key advances to the next input field
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent form submission
+
+      // Calculate the index of the next input field
+      const nextIndex = index + 1;
+      if (nextIndex < inputFields.length) {
+        inputFields[nextIndex].focus(); // Shift focus to the next input field
+      }
+    }
+  });
+});
 
 ///////////////////////  LEAGUE INPUT FIELD DROPDOWN  ///////////////////////
 

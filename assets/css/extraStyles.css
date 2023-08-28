@@ -1,11 +1,12 @@
  /* Add custom CSS to control dropdown positioning */
 .field {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
 
 .field label {
-  margin-bottom: 5px;
+  margin-right: 10px;
 }
 
 .field .select {
@@ -29,6 +30,13 @@
 
 .result-button {
   width: 80px; /* Adjust the width as needed */
+}
+
+.char-count {
+  position: absolute;
+  top: 0; /* Align vertically with the label */
+  right: 0; /* Align to the right */
+  color: #888; 
 }
 
 /* Style the dropdown list */
