@@ -34,6 +34,18 @@ class Predicts {
     return res;
   };
 
+  getPredictNames = async () => {
+    console.log(`Predicts.js > getPredictNames`);
+  
+    const predicts = await this.#getCollection();
+    let res = await predicts.find({}).toArray();
+  
+    res = res.map((predict) => predict.name);
+    res = res.sort();
+    console.log(res);
+    return res;
+  };
+
   addPredict = async (predict) => {
     console.log(`Predict.js > addPredict: ${predict}`);
 

@@ -34,6 +34,18 @@ class Teams {
     return res;
   };
 
+  getTeamNames = async () => {
+    console.log(`Teams.js > getTeamNames`);
+  
+    const teams = await this.#getCollection();
+    let res = await teams.find({}).toArray();
+  
+    res = res.map((team) => team.name);
+    res = res.sort();
+    console.log(res);
+    return res;
+  };
+
   addTeam = async (team) => {
     console.log(`Team.js > addTeam: ${team}`);
 

@@ -1,21 +1,45 @@
-var leagueOptions = [];
-var leagueInput = document.getElementById("leagueInput");
+var leagueOptions = [], teamOptions = [], predictOptions = [];
+var leagueInput = document.getElementById("league-input");
+var homeInput = document.getElementById("home-input");
+var awayInput = document.getElementById("away-input");
+var predictInput = document.getElementById("predict-input");
+var amountInput = document.getElementById("amount-input");
+var oddInput = document.getElementById("odd-input");
 
-function updateLeagueList() {
-  const inputValue = leagueInput.value;
-  const filteredLeagues = leagueOptions.filter(league =>
-    league.toLowerCase().includes(inputValue.toLowerCase())
+function updateList(input, options) {
+  const inputValue = input.value;
+  const filtered = options.filter(option =>
+    option.toLowerCase().includes(inputValue.toLowerCase())
   );
 
-  const displayedLeagues = filteredLeagues.slice(0, 3);
-  const html = displayedLeagues.map(league => `<li>${league}</li>`).join("");
-  document.getElementById("leagues-list").innerHTML = html;
+  const displayed = filtered.slice(0, 3);
+  const html = displayed.map(option => `<li>${option}</li>`).join("");
+  if (input === leagueInput) document.getElementById("leagues-list").innerHTML = html;
+  else if (input === homeInput) document.getElementById("home-list").innerHTML = html;
+  else if (input === awayInput) document.getElementById("away-list").innerHTML = html;
+  else if (input === predictInput) document.getElementById("predicts-list").innerHTML = html;
   return html;
+}
+
+function updateLists() {
+  updateList(leagueInput, leagueOptions);
+  updateList(homeInput, teamOptions);
+  updateList(awayInput, teamOptions);
+  updateList(predictInput, predictOptions);
 }
 
 window.addEventListener("load", async () => {
   //Event handlers
   leagueOptions = await window.api.getLeagueNames();
+  teamOptions = await window.api.getTeamNames();
+  predictOptions = await window.api.getPredictNames();
+
+
+  setupDropdown(leagueInput, document.getElementById("leagues-list"), leagueOptions);
+  setupDropdown(homeInput, document.getElementById("home-list"), teamOptions);
+  setupDropdown(awayInput, document.getElementById("away-list"), teamOptions);
+  setupDropdown(predictInput, document.getElementById("predicts-list"), predictOptions);
+
   //Save button
   const btnSave = document.getElementById("btnSave");
   btnSave.addEventListener("click", btnSaveClick);
@@ -28,7 +52,7 @@ window.addEventListener("load", async () => {
   window.api.gotBets(gotBets);
   window.api.gotBetUpdatedResult(gotBetUpdatedResult);
   window.api.gotDeletedResult(gotDeletedResult);
-  updateLeagueList();
+  updateLists();
 });
 
 
@@ -86,12 +110,12 @@ const btnSaveClick = async (event) => {
   console.log("Save button clicked");
   event.preventDefault();
 
-  const league = document.getElementById("leagueInput").value;
-  const home = document.getElementById("home").value;
-  const away = document.getElementById("away").value;
-  const predict = document.getElementById("predict").value;
-  const amount = document.getElementById("amount").value;
-  const odd = document.getElementById("odd").value;
+  const league = leagueInput.value;
+  const home = homeInput.value;
+  const away = awayInput.value;
+  const predict = predictInput.value;
+  const amount = amountInput.value;
+  const odd = oddInput.value;
   const result = document.getElementById("result").value;
   const betId = document.getElementById("betId").value;
 
@@ -114,12 +138,12 @@ const btnSaveClick = async (event) => {
 // Helper function to reset the form fields
 const resetForm = async () => {
   const inputId = document.getElementById("betId");
-  const league = document.getElementById("leagueInput");
-  const home = document.getElementById("home");
-  const away = document.getElementById("away");
-  const predict = document.getElementById("predict");
-  const amount = document.getElementById("amount");
-  const odd = document.getElementById("odd");
+  const league = leagueInput;
+  const home = homeInput;
+  const away = awayInput;
+  const predict = predictInput;
+  const amount = amountInput;
+  const odd = oddInput;
   const result = document.getElementById("result");
 
   inputId.value = "";
@@ -133,7 +157,9 @@ const resetForm = async () => {
 
   window.api.getBets();
   leagueOptions = await window.api.getLeagueNames();
-  updateLeagueList();
+  teamOptions = await window.api.getTeamNames();
+  predictOptions = await window.api.getPredictNames();
+  updateLists();
 };
 
 function Delete(betId) {
@@ -145,12 +171,12 @@ function Edit(betId) {
   const betFound = betData.find((bet) => bet.id === betId);
 
   const inputId = document.getElementById("betId");
-  const league = document.getElementById("leagueInput");
-  const home = document.getElementById("home");
-  const away = document.getElementById("away");
-  const predict = document.getElementById("predict");
-  const amount = document.getElementById("amount");
-  const odd = document.getElementById("odd");
+  const league = leagueInput;
+  const home = homeInput;
+  const away = awayInput;
+  const predict = predictInput;
+  const amount = amountInput;
+  const odd = oddInput;
   const result = document.getElementById("result");
 
   inputId.value = betId;
@@ -270,31 +296,29 @@ inputFields.forEach((input, index) => {
   });
 });
 
-///////////////////////  LEAGUE INPUT FIELD DROPDOWN  ///////////////////////
+function setupDropdown(input, dropdown, options) {
+  input.addEventListener("focus", function () {
+    updateList(input, options);
+    dropdown.style.display = "block";
+  });
 
-// Add an event listener to the leagueInput to show the dropdown when clicked
-leagueInput.addEventListener("focus", function () {
-  updateLeagueList();
-  document.getElementById("leagues-list").style.display = "block"; // Show the dropdown
-});
+  input.addEventListener("input", function () {
+    const html = updateList(input, options);
+    dropdown.innerHTML = html;
+    dropdown.style.display = "block";
+  });
 
-leagueInput.addEventListener("input", function () {
-  const html = updateLeagueList();
-  document.getElementById("leagues-list").innerHTML = html;
-});
+  dropdown.addEventListener("click", function (event) {
+    const clickedItem = event.target;
+    if (clickedItem.tagName === "LI") {
+      input.value = clickedItem.textContent;
+      dropdown.style.display = "none";
+    }
+  });
 
-// Add click event listeners to the dropdown items
-document.getElementById("leagues-list").addEventListener("click", function (event) {
-  const clickedItem = event.target;
-  if (clickedItem.tagName === "LI") {
-    leagueInput.value = clickedItem.textContent;
-    document.getElementById("leagues-list").style.display = "none"; // Hide the dropdown after selection
-  }
-});
-
-// Hide the dropdown when clicking outside of it
-window.addEventListener("click", function (event) {
-  if (event.target !== leagueInput && event.target !== document.getElementById("leagues-list")) {
-    document.getElementById("leagues-list").style.display = "none";
-  }
-});
+  window.addEventListener("click", function (event) {
+    if (event.target !== input && event.target !== dropdown) {
+      dropdown.style.display = "none";
+    }
+  });
+}

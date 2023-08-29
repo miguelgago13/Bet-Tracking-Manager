@@ -175,12 +175,34 @@ let getLeagueNames = async () => {
   }
 };
 
+let getTeamNames = async () => {
+  try {
+    const teamNames = await teams.getTeamNames(); // Assuming leagues is available
+    return teamNames;
+  } catch (error) {
+    console.error("Error fetching team names:", error);
+    return [];
+  }
+};
+
+let getPredictNames = async () => {
+  try {
+    const predictNames = await predicts.getPredictNames(); // Assuming leagues is available
+    return predictNames;
+  } catch (error) {
+    console.error("Error fetching predict names:", error);
+    return [];
+  }
+};
+
 contextBridge.exposeInMainWorld("api", {
   getBets,
   gotBets,
   saveBet,
   updateBet,
   getLeagueNames,
+  getTeamNames,
+  getPredictNames,
   gotBetUpdatedResult,
   gotDeletedResult,
   deleteBets,
