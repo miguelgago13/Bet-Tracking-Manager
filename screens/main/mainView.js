@@ -5,6 +5,7 @@ var awayInput = document.getElementById("away-input");
 var predictInput = document.getElementById("predict-input");
 var amountInput = document.getElementById("amount-input");
 var oddInput = document.getElementById("odd-input");
+const inputFields = document.querySelectorAll(".input");
 
 function updateList(input, options) {
   const inputValue = input.value;
@@ -160,6 +161,7 @@ const resetForm = async () => {
   teamOptions = await window.api.getTeamNames();
   predictOptions = await window.api.getPredictNames();
   updateLists();
+  resetAllCharacterCountElements();
 };
 
 function Delete(betId) {
@@ -261,12 +263,30 @@ function showCharacterCountElement(inputField) {
 
 function hideCharacterCountElement(inputField) {
   const parentContainer = inputField.closest(".field");
-    const charCountElement = parentContainer.querySelector(".char-count");
-    charCountElement.style.display = "none";
+  const charCountElement = parentContainer.querySelector(".char-count");
+  charCountElement.style.display = "none";
+}
+
+function resetCharacterCountElement(inputField) {
+  const maxLength = parseInt(inputField.getAttribute("maxlength"));
+  const remainingChars = maxLength;
+
+  // Navigate to the parent container and find the char-count element
+  const parentContainer = inputField.closest(".field");
+  const charCountElement = parentContainer.querySelector(".char-count");
+  charCountElement.textContent = `${remainingChars} characters remaining`;
+  charCountElement.style.display = "none";
+}
+
+// Reset character count element for all input fields
+function resetAllCharacterCountElements() {
+  inputFields.forEach((input) => {
+    resetCharacterCountElement(input);
+  });
 }
 
 // Add an event listener to each input field to track character count and focus events
-const inputFields = document.querySelectorAll(".input");
+
 inputFields.forEach((input, index) => {
   input.addEventListener("input", function () {
     addCharacterCounter(input);
