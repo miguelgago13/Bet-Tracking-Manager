@@ -5,29 +5,10 @@ var awayInput = document.getElementById("away-input");
 var predictInput = document.getElementById("predict-input");
 var amountInput = document.getElementById("amount-input");
 var oddInput = document.getElementById("odd-input");
+const resultInput = document.getElementById("result");
 const inputFields = document.querySelectorAll(".input");
-
-function updateList(input, options) {
-  const inputValue = input.value;
-  const filtered = options.filter(option =>
-    option.toLowerCase().includes(inputValue.toLowerCase())
-  );
-
-  const displayed = filtered.slice(0, 3);
-  const html = displayed.map(option => `<li>${option}</li>`).join("");
-  if (input === leagueInput) document.getElementById("leagues-list").innerHTML = html;
-  else if (input === homeInput) document.getElementById("home-list").innerHTML = html;
-  else if (input === awayInput) document.getElementById("away-list").innerHTML = html;
-  else if (input === predictInput) document.getElementById("predicts-list").innerHTML = html;
-  return html;
-}
-
-function updateLists() {
-  updateList(leagueInput, leagueOptions);
-  updateList(homeInput, teamOptions);
-  updateList(awayInput, teamOptions);
-  updateList(predictInput, predictOptions);
-}
+var formHasEmptyFields = true;
+const emptyFieldsMessage = document.getElementById("emptyFieldsMessage");
 
 window.addEventListener("load", async () => {
   //Event handlers
@@ -111,50 +92,87 @@ const btnSaveClick = async (event) => {
   console.log("Save button clicked");
   event.preventDefault();
 
+
   const league = leagueInput.value;
   const home = homeInput.value;
   const away = awayInput.value;
   const predict = predictInput.value;
   const amount = amountInput.value;
   const odd = oddInput.value;
-  const result = document.getElementById("result").value;
+  const result = resultInput.value;
   const betId = document.getElementById("betId").value;
 
+  // Remove red border from all input fields
+  inputFields.forEach(input => input.classList.remove("required-field"));
+
+  // Check if any input field is empty
+  if (!league || !home || !away || !predict || !amount || !odd || !result) {
+    // Highlight empty fields with red border
+    if (!league) leagueInput.classList.add("required-field");
+    if (!home) homeInput.classList.add("required-field");
+    if (!away) awayInput.classList.add("required-field");
+    if (!predict) predictInput.classList.add("required-field");
+    if (!amount) amountInput.classList.add("required-field");
+    if (!odd) oddInput.classList.add("required-field");
+    if (!result) resultInput.classList.add("required-field");
+    emptyFieldsMessage.style.display = "block";
+    return;
+  }
+  emptyFieldsMessage.style.display = "none";
   console.log(
     `League: ${league}, Home: ${home}, Away: ${away}, Predict: ${predict}, Amount: ${amount}, Odd: ${odd}, Result: ${result}, betId: ${betId}`
   );
   try {
     if (betId === "") {
       await window.api.saveBet({ league, home, away, predict, amount, odd, result });
-      // alert("Record saved");
     } else {
       await window.api.updateBet(betId, { league, home, away, predict, amount, odd, result });
     }
     resetForm();
+    // Close the addBetContainer after form submission
+    addBetContainer.style.display = "none";
+    btnAddBet.textContent = "Add Bet";
   } catch (error) {
     console.error(error);
   }
 };
 
+// Update specific input field list
+function updateList(input, options) {
+  const inputValue = input.value;
+  const filtered = options.filter(option =>
+    option.toLowerCase().includes(inputValue.toLowerCase())
+  );
+
+  const displayed = filtered.slice(0, 3);
+  const html = displayed.map(option => `<li>${option}</li>`).join("");
+  if (input === leagueInput) document.getElementById("leagues-list").innerHTML = html;
+  else if (input === homeInput) document.getElementById("home-list").innerHTML = html;
+  else if (input === awayInput) document.getElementById("away-list").innerHTML = html;
+  else if (input === predictInput) document.getElementById("predicts-list").innerHTML = html;
+  return html;
+}
+
+// // Update all input fiels lists
+function updateLists() {
+  updateList(leagueInput, leagueOptions);
+  updateList(homeInput, teamOptions);
+  updateList(awayInput, teamOptions);
+  updateList(predictInput, predictOptions);
+}
+
 // Helper function to reset the form fields
 const resetForm = async () => {
   const inputId = document.getElementById("betId");
-  const league = leagueInput;
-  const home = homeInput;
-  const away = awayInput;
-  const predict = predictInput;
-  const amount = amountInput;
-  const odd = oddInput;
-  const result = document.getElementById("result");
 
   inputId.value = "";
-  league.value = "";
-  home.value = "";
-  away.value = "";
-  predict.value = "";
-  amount.value = "";
-  odd.value = "";
-  result.value = "Pending";
+  leagueInput.value = "";
+  homeInput.value = "";
+  awayInput.value = "";
+  predictInput.value = "";
+  amountInput.value = "";
+  oddInput.value = "";
+  resultInput.value = "Pending";
 
   window.api.getBets();
   leagueOptions = await window.api.getLeagueNames();
@@ -173,22 +191,15 @@ function Edit(betId) {
   const betFound = betData.find((bet) => bet.id === betId);
 
   const inputId = document.getElementById("betId");
-  const league = leagueInput;
-  const home = homeInput;
-  const away = awayInput;
-  const predict = predictInput;
-  const amount = amountInput;
-  const odd = oddInput;
-  const result = document.getElementById("result");
 
   inputId.value = betId;
-  league.value = betFound.league;
-  home.value = betFound.home;
-  away.value = betFound.away;
-  predict.value = betFound.predict;
-  amount.value = betFound.amount;
-  odd.value = betFound.odd;
-  result.value = betFound.result;
+  leagueInput.value = betFound.league;
+  homeInput.value = betFound.home;
+  awayInput.value = betFound.away;
+  predictInput.value = betFound.predict;
+  amountInput.value = betFound.amount;
+  oddInput.value = betFound.odd;
+  resultInput.value = betFound.result;
 
   // Show the addBetContainer
   addBetContainer.style.display = "block";
@@ -212,8 +223,14 @@ btnAddBet.addEventListener("click", function() {
 // Save Bet Button
 const btnSaveBet = document.getElementById("btnSave");
 btnSaveBet.addEventListener("click", function() {
-  addBetContainer.style.display = "none";
-  btnAddBet.textContent = "Add Bet";
+  if(formHasEmptyFields) {
+    addBetContainer.style.display = "block";
+  }
+  else {
+    addBetContainer.style.display = "none";
+    btnAddBet.textContent = "Add Bet";
+    formHasEmptyFields = true;
+  }
 });
 
 

@@ -53,4 +53,6 @@ ul li {
   color: #363636; /* Match the color of select options */
 }
 
-
+.required-field {
+  border: 1px solid red;
+}
