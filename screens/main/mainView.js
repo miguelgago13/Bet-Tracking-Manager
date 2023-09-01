@@ -8,6 +8,7 @@ var oddInput = document.getElementById("odd-input");
 const resultInput = document.getElementById("result");
 const inputFields = document.querySelectorAll(".input");
 var formHasEmptyFields = true;
+var editingBet = false;
 const emptyFieldsMessage = document.getElementById("emptyFieldsMessage");
 
 window.addEventListener("load", async () => {
@@ -189,8 +190,8 @@ function Delete(betId) {
 
 function Edit(betId) {
   const betFound = betData.find((bet) => bet.id === betId);
-
   const inputId = document.getElementById("betId");
+  editingBet = true;
 
   inputId.value = betId;
   leagueInput.value = betFound.league;
@@ -201,9 +202,12 @@ function Edit(betId) {
   oddInput.value = betFound.odd;
   resultInput.value = betFound.result;
 
+  resetAllCharacterCountElements();
+
   // Show the addBetContainer
   addBetContainer.style.display = "block";
   btnAddBet.textContent = "Cancel";
+  editingBet = false;
 }
 
 // Add Bet/Cancel Button
@@ -286,11 +290,12 @@ function hideCharacterCountElement(inputField) {
 
 function resetCharacterCountElement(inputField) {
   const maxLength = parseInt(inputField.getAttribute("maxlength"));
-  const remainingChars = maxLength;
-
+  const currentLength = inputField.value.length;
+  const remainingChars = editingBet ? maxLength - currentLength : maxLength;
   // Navigate to the parent container and find the char-count element
   const parentContainer = inputField.closest(".field");
   const charCountElement = parentContainer.querySelector(".char-count");
+  
   charCountElement.textContent = `${remainingChars} characters remaining`;
   charCountElement.style.display = "none";
 }
